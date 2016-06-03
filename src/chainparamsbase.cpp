@@ -14,6 +14,7 @@ const std::string CBaseChainParams::MAIN = "main";
 const std::string CBaseChainParams::TESTNET = "test";
 const std::string CBaseChainParams::REGTEST = "regtest";
 const std::string CBaseChainParams::SEGNET = "segnet";
+const std::string CBaseChainParams::BSAFENET = "bsafenet";
 
 void AppendParamsHelpMessages(std::string& strUsage, bool debugHelp)
 {
@@ -23,6 +24,7 @@ void AppendParamsHelpMessages(std::string& strUsage, bool debugHelp)
         strUsage += HelpMessageOpt("-regtest", "Enter regression test mode, which uses a special chain in which blocks can be solved instantly. "
                                    "This is intended for regression testing tools and app development.");
         strUsage += HelpMessageOpt("-segnet", "Enter segregated witness test mode. ");
+        strUsage += HelpMessageOpt("-bsafenet", "Enter segregated witness test mode on bsafenet. ");
     }
 }
 
@@ -67,6 +69,20 @@ public:
 };
 static CBaseSegNetParams segNetParams;
 
+/**
+ * bsafenet
+ */
+class CBaseSafeNetParams : public CBaseChainParams
+{
+public:
+    CBaseSafeNetParams()
+    {
+        nRPCPort = 34822;
+        strDataDir = "bsafenet";
+    }
+};
+static CBaseSafeNetParams bSafeParams;
+
 /*
  * Regression test
  */
@@ -99,6 +115,8 @@ CBaseChainParams& BaseParams(const std::string& chain)
         return segNetParams;
     else if (chain == CBaseChainParams::REGTEST)
         return regTestParams;
+    else if (chain == CBaseChainParams::BSAFENET)
+        return bSafeParams;
     else
         throw std::runtime_error(strprintf("%s: Unknown chain %s.", __func__, chain));
 }
@@ -113,15 +131,18 @@ std::string ChainNameFromCommandLine()
     bool fRegTest = GetBoolArg("-regtest", false);
     bool fTestNet = GetBoolArg("-testnet", false);
     bool fSegNet = GetBoolArg("-segnet", false);
+    bool fbsafeNet = GetBoolArg("-bsafenet", false);
 
-    if ((int)fRegTest + (int)fTestNet + (int)fSegNet > 1)
-        throw std::runtime_error("Invalid combination of -regtest, -testnet, -segnet.");
+    if ((int)fRegTest + (int)fTestNet + (int)fSegNet + (int)fbsafeNet > 1)
+        throw std::runtime_error("Invalid combination of -regtest, -testnet, -segnet, -bsafenet.");
     if (fRegTest)
         return CBaseChainParams::REGTEST;
     if (fTestNet)
         return CBaseChainParams::TESTNET;
     if (fSegNet)
         return CBaseChainParams::SEGNET;
+    if (fbsafeNet)
+        return CBaseChainParams::BSAFENET;
     return CBaseChainParams::MAIN;
 }
 

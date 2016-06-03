@@ -20,6 +20,7 @@ public:
     static const std::string TESTNET;
     static const std::string REGTEST;
     static const std::string SEGNET;
+    static const std::string BSAFENET;
 
     const std::string& DataDir() const { return strDataDir; }
     int RPCPort() const { return nRPCPort; }
